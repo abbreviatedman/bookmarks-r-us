@@ -1,4 +1,5 @@
 // app.js
+
 // Files
 const bookmarksController = require("./controllers/bookmarksController");
 // DEPENDENCIES
@@ -7,21 +8,26 @@ const express = require("express");
 // Create the Express app.
 const app = express();
 
-// Delegate everything that starts with `/bookmarks` to the bookmarks controller.
-// .use takes in two arguments:
-// - the sub-route for the controller to handle
-// - the controller that should handle it
-// Read as a sentence: "For any route that starts with "/bookmarks", use the bookmarks controller."
+// MIDDLEWARE
+
+// JSON-parsing middleware
+// For every request, parse incoming information as JSON.
+// IMPORTANT: make sure this comes *before* any controllers!
+// Otherwise, they won't have their stuff parsed from JSON.
+app.use(express.json());
+
+// In the middle of every request, check if the endpoint starts with /bookmarks
+// If so, send it to the bookmarks controller/router.
 app.use("/bookmarks", bookmarksController);
 
 // The home route.
-app.get("/", (request, response) => {
+app.get("/", () => {
   console.log("GET request to /");
-  response.send("Welcome to Bookmarks 'R' Us");
+  response.send("Hello and welcome to bookmarks!");
 });
 
 // Star (*) matches anything we haven't matched yet.
-app.get("*", (request, response) => {
+app.get("*", (_, response) => {
   response.status(404).json({ error: "Page not found" });
 });
 
